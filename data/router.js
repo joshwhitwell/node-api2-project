@@ -16,7 +16,20 @@ router.get('/api/posts', (req, res) => {
 })
 
 router.get('/api/posts/:id', (req, res) => {
-
+    const { id } = req.params
+    database.findById(id)
+        .then(post =>
+            post.length ? 
+            res.status(200).json({
+                message: 'Success', 
+                data: post 
+            }) 
+            : res.status(404).json({
+                message: `No post found with ID: ${id}` 
+            }))
+        .catch(err => {
+            res.status(500).json({ message: 'Failure getting post', stack: err.stack })
+        })
 })
 
 router.get('/api/posts/:id/comments', (req, res) => {
