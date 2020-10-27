@@ -25,7 +25,7 @@ router.get('/api/posts/:id', (req, res) => {
                 data: post 
             }) 
             : res.status(404).json({
-                message: `No post found with ID: ${id}` 
+                message: `Post not found with ID: ${id}` 
             }))
         .catch(err => {
             res.status(500).json({ message: 'Failure getting post', stack: err.stack })
@@ -52,7 +52,6 @@ router.get('/api/posts/:id/comments', (req, res) => {
             res.status(500).json({ message: 'Failure getting comments', stack: err.stack })
         })
 })
-        
 
 //[ POST ] Request Handlers
 router.post('/api/posts', (req, res) => {
@@ -83,7 +82,7 @@ router.post('/api/posts/:id/comments', (req, res) => {
                 })
                 .catch(err => {
                     console.log(err)
-                    res.status(404).json({ message: `No post found with ID: ${id} `})
+                    res.status(404).json({ message: `Post not found with ID: ${id} `})
                 })
         }
     } catch(error) {
@@ -93,12 +92,24 @@ router.post('/api/posts/:id/comments', (req, res) => {
 
 //[ PUT ] Request Handlers
 router.put('/api/posts/:id', (req, res) => {
-
+    const { title, contents } = req.body
+    const { id } = req.params
+    database.update(id, { title, contents })
+        .then(post => {
+            if (post === 1) {
+                res.status(200).json({ message: 'Success', post })
+            } else {
+                res.status(404).json({ message: `Post not found with ID: ${id}` })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'Failure updating post', stack: err.stack })
+        })
 })
 
 //[ DELETE ] Request Handlers
 router.delete('/api/posts/:id', (req, res) => {
-
+    
 })
 
 module.exports = router
