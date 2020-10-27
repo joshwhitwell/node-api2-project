@@ -94,17 +94,21 @@ router.post('/api/posts/:id/comments', (req, res) => {
 router.put('/api/posts/:id', (req, res) => {
     const { title, contents } = req.body
     const { id } = req.params
-    database.update(id, { title, contents })
-        .then(post => {
-            if (post === 1) {
-                res.status(200).json({ message: 'Success', post })
-            } else {
-                res.status(404).json({ message: `Post not found with ID: ${id}` })
-            }
-        })
-        .catch(err => {
-            res.status(500).json({ message: 'Failure updating post', stack: err.stack })
-        })
+    if (!title || !contents) {
+        res.status(400).json({ message: 'Title and contents are required'})
+    } else {
+        database.update(id, { title, contents })
+            .then(post => {
+                if (post === 1) {
+                    res.status(200).json({ message: 'Success', post })
+                } else {
+                    res.status(404).json({ message: `Post not found with ID: ${id}` })
+                }
+            })
+            .catch(err => {
+                res.status(500).json({ message: 'Failure updating post', stack: err.stack })
+            })
+    }
 })
 
 //[ DELETE ] Request Handlers
