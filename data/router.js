@@ -33,8 +33,26 @@ router.get('/api/posts/:id', (req, res) => {
 })
 
 router.get('/api/posts/:id/comments', (req, res) => {
-
+    const { id } = req.params
+    database.findById(id)
+        .then(post => {
+            if (post.length) {
+                database.findPostComments(id)
+                    .then(comments => {
+                        res.status(200).json({ message: 'Success', data: comments })
+                    })
+                    .catch(err => {
+                        res.status(500).json({ message: 'Failure getting comments', stack: err.stack })
+                    })
+            } else {
+                res.status(404).json({ message: `Post not found with ID: ${id}` })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'Failure getting comments', stack: err.stack })
+        })
 })
+        
 
 //[ POST ] Request Handlers
 router.post('/api/posts', (req, res) => {
